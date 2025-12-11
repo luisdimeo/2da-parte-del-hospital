@@ -1,100 +1,95 @@
-Descripción General
-Este proyecto implementa un sistema hospitalario en C++ que gestiona pacientes, doctores, citas y historiales médicos. A diferencia del Proyecto 1, los datos no se mantienen en memoria: 
-se utiliza persistencia con archivos binarios y acceso aleatorio (seekg, seekp) para leer y escribir únicamente los registros necesarios.
+#  Proyecto 3: Sistema de Gestión Hospitalaria en C++
 
- Objetivos de Aprendizaje
-Implementar persistencia de datos mediante archivos binarios.
+## Descripción
+Este proyecto corresponde al **Proyecto 3 de Programación en C++**, donde se implementa un sistema hospitalario modular con persistencia en archivos binarios.  
+El sistema permite administrar **Pacientes, Doctores, Citas e Historiales Médicos**, integrando un menú principal y operaciones específicas para cada entidad.
 
-Dominar operaciones de lectura/escritura binaria con fstream.
+---
 
-Aplicar acceso aleatorio usando seekg() y seekp().
+## Especificaciones del Proyecto 3
 
-Comprender el mapeo entre estructuras en memoria y archivos.
+1. **Arquitectura modular**
+   - Cada entidad (`Paciente`, `Doctor`, `Cita`, `HistorialMedico`, `Hospital`) está encapsulada en archivos `.hpp` y `.cpp`.
+   - El proyecto compila desde la carpeta raíz con un **Makefile** o un único comando `g++`.
+   - Separación clara entre **interfaz (headers)** y **implementación (source)**.
 
-Gestionar índices y posiciones en archivos binarios.
+2. **Persistencia en archivos binarios**
+   - Los datos se guardan en la carpeta `datos/` (`pacientes.bin`, `doctores.bin`, `citas.bin`, `historiales.bin`).
+   - El módulo `persistencia/gestorArchivos.cpp` implementa:
+     - Guardar registros (`write`)
+     - Leer registros (`read`)
+     - Listar registros
+     - Buscar por ID
+     - Modificar registros
+     - Eliminar registros (marcado lógico)
+     - Generar IDs únicos automáticamente
 
-Garantizar integridad y escalabilidad en el manejo de registros.
+3. **Menú principal**
+   - `main.cpp` muestra un menú con opciones para:
+     - Gestionar pacientes
+     - Gestionar doctores
+     - Gestionar citas
+     - Gestionar historiales médicos
+     - Salir del sistema
 
- Arquitectura de Archivos
-El sistema organiza la información en archivos binarios separados:
+4. **Operaciones**
+   - Cada módulo en `operaciones/` solicita datos al usuario, crea objetos y usa el Gestor de Archivos.
+   - Ejemplo: `operacionesPacientes.cpp`, `operacionesDoctores.cpp`, etc.
 
-hospital.bin → Datos básicos del hospital (nombre, dirección, contadores).
+5. **Validaciones y utilidades**
+   - Carpeta `utilidades/` contiene funciones auxiliares:
+     - Validación de entradas (ej. fechas, IDs, strings).
+     - Formatos de impresión (ej. tablas, alineación).
 
-pacientes.bin → Registros de pacientes.
+6. **Documentación**
+   - Incluye este **README.md** con:
+     - Descripción del sistema
+     - Estructura de carpetas
+     - Instrucciones de compilación
+     - Especificaciones del Proyecto 3
+   - Carpeta `docs/` opcional para diagramas UML y manuales.
 
-doctores.bin → Registros de doctores.
+7. **Requisitos de compilación**
+   - El proyecto debe compilar sin errores desde la raíz.
+   - Los `.o` y `.exe` se guardan en `output/`.
+   - Los binarios de datos se guardan en `datos/`.
 
-citas.bin → Registros de citas.
+---
 
-historiales.bin → Consultas médicas atendidas.
+## Estructura de Carpetas
+proyectodeprogramacion2/ 
+│── citas/ # Entidad Cita 
+│── doctores/ # Entidad Doctor
+│── pacientes/ # Entidad Paciente 
+│── historial/ # Entidad HistorialMedico 
+│── hospital/ # Entidad Hospital 
+│── operaciones/ # Funciones de menú 
+│── persistencia/ # Gestor de Archivos y constantes 
+│── utilidades/ # Validaciones y formatos 
+│── datos/ # Archivos binarios persistentes
+│── output/ # Binarios compilados 
+│── main.cpp # Menú principal 
+│── parte2dehospital.cpp# Extensión del sistema 
+│── README.md # Documentación del proyecto
+Usando g++
+g++ main.cpp citas/Cita.cpp doctores/Doctor.cpp pacientes/Paciente.cpp \
+    historial/HistorialMedico.cpp hospital/Hospital.cpp \
+    operaciones/operacionesPacientes.cpp operaciones/operacionesDoctores.cpp \
+    operaciones/operacionesCitas.cpp operaciones/operacionesHistorial.cpp \
+    persistencia/gestorArchivos.cpp utilidades/Formatos.cpp utilidades/Validaciones.cpp \
+    -o output/hospital.exe
+## Compilación y ejecución
+./output/hospital.exe
+.gitignore recomendado
+# Archivos compilados
+*.o
+*.exe
 
-Cada archivo contiene:
+# Binarios de datos
+*.bin
 
-Header (encabezado) con metadatos: cantidad de registros, próximo ID, registros activos, versión.
+# Configuración local
+.vscode/
+output/
 
-Registros fijos de cada entidad.
 
- Estructuras Principales
-Hospital: datos básicos y contadores de IDs.
-
-Paciente: información personal, citas e historial referenciados por ID.
-
-Doctor: datos profesionales y relación con pacientes/citas.
-
-Cita: vínculo entre paciente y doctor, estado y referencia a historial.
-
-Historial Médico: consultas realizadas, enlazadas mediante IDs.
-
- Ciclo de Operaciones
-Cada operación sigue este patrón:
-
-Abrir archivo binario.
-
-Posicionarse en el registro exacto con seekg/seekp.
-Funcionalidades del Menú
-Registrar paciente
-
-Registrar doctor
-
-Agendar cita
-
-Atender cita (crea historial médico)
-
-Mostrar historial de pacientes
-
-Listar doctores
-
-Listar pacientes
-
-Buscar paciente
-
-Buscar doctor
-
-Buscar paciente por coincidencia parcial
-
-Eliminar paciente (borrado lógico)
-
-Eliminar doctor (borrado lógico)
-
-Salir
-
- Ventajas del Acceso Aleatorio
-Escalabilidad: Maneja miles de registros sin cargar todo en RAM.
-
-Persistencia inmediata: Cada operación se guarda en disco al instante.
-
-Integridad: Los archivos siempre están actualizados.
-
-Eficiencia: Solo se accede al registro necesario.
-
- Casos de Prueba
-Crear pacientes y verificar persistencia tras cerrar/reabrir el programa.
-
-Atender citas y confirmar que el historial se guarda en historiales.bin.
-
-Eliminar registros y comprobar que se marcan como eliminado.
-
-Listar registros y validar que solo se muestran los activos.
-Leer o escribir solo ese registro.
-
-Cerrar archivo inmediatamente.
